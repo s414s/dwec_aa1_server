@@ -5,14 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "db:init": "sequelize-cli db:migrate && sequelize-cli db:seed:all",
+    "www": "live-server www/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "faker": "^6.6.6",
+    "live-server": "^1.2.2",
     "sequelize": "^6.25.3",
     "sqlite3": "^5.1.2"
   },
