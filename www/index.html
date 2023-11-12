@@ -27,10 +27,12 @@
     </div>
 
     <div class="row">
+
       <div class="col">
         <h4>Categories</h4>
-        <ul class="border rounded"></ul>
+        <nav class="border rounded nav flex-column"></nav>
       </div>
+
       <div class="col-10">
         <table class="table">
           <thead>
@@ -68,6 +70,7 @@
               <td>fbUser</td>
               <td>01/10/2018</td>
               <td>
+
                 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                   <i class="bi bi-file-earmark-code"></i>
                 </button>
@@ -89,39 +92,94 @@
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
       aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+            <h1 class="modal-title fs-5" id="staticBackdropLabel">Create Category</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             Put all the inputs in here
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Understood</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Save</button>
           </div>
         </div>
       </div>
     </div>
-
   </main>
 
   <script>
-    let drawData = (data) => {
+    let drawCategories = (data) => {
+      console.log("data from categories", data)
       data.forEach(category => {
-        let parent = document.getElementsByTagName('ul')[0]
-        let child = document.createElement('li')
+        let parent = document.getElementsByTagName('nav')[0]
+        let child = document.createElement('a')
         // child.innerText = JSON.stringify(category)
         child.innerText = category.name
+        child.className = "nav-link"
+        child.href = "#myCategory"
+        child.id = category.id
         parent.appendChild(child)
       })
     }
 
+    let drawSites = (data) => {
+      console.log("data from sites", data)
+      const parent = document.getElementsByTagName('tbody')[0]
+      data.forEach((site, index) => {
+        const row = document.createElement('tr')
+        row.id = site.id
+
+        // ORDER CELL
+        const orderCell = document.createElement('th')
+        orderCell.innerText = index + 1
+        row.appendChild(orderCell)
+
+        // SITENAME CELL
+        const siteNameCell = document.createElement('td')
+        siteNameCell.innerText = site.url
+        row.appendChild(siteNameCell)
+
+        // USERNAME CELL
+        const userNameCell = document.createElement('td')
+        userNameCell.innerText = site.user
+        row.appendChild(userNameCell)
+
+        // DATE CELL
+        const creationDateCell = document.createElement('td')
+        const date = new Date(site.createdAt)
+        const formattedDate = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        });
+        creationDateCell.innerText = formattedDate
+        row.appendChild(creationDateCell)
+
+        // ACTION CELL
+        const actionsCell = document.createElement('td')
+        // TODO - create button to open
+        // TODO - create trash button
+        // TODO - create edit button
+        row.appendChild(actionsCell)
+
+        parent.appendChild(row)
+      })
+    }
+
+    const apiOrigin = "http://localhost:3000"
+    const categoryId = "1"
+
+    fetch(`${apiOrigin}/categories/${categoryId}`)
+      .then(res => res.json())
+      .then(data => drawSites(data))
+
     fetch("http://localhost:3000/categories")
       .then(res => res.json())
-      .then(data => drawData(data))
+      .then(data => drawCategories(data))
+
   </script>
 
 </body>
