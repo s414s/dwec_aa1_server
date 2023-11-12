@@ -1,15 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Password Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
+
 <body>
-  <main>
-    <ul></ul>
+  <main class="container">
+
+    <div class="btn-group my-4" role="group" aria-label="Basic example">
+      <button type="button" class="btn btn-primary">Add Category</button>
+      <button type="button" class="btn btn-secondary">Add Site</button>
+    </div>
+
+    <div class="row">
+      <div class="col border rounded">
+        <ul></ul>
+      </div>
+      <div class="col-10">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Site</th>
+              <th scope="col">User</th>
+              <th scope="col">Created At</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <th scope="row">1</th>
+              <td>Google</td>
+              <td>Mysample</td>
+              <td>10/10/2020</td>
+              <td>
+                <i class="bi bi-file-earmark-code"></i>
+                <i class="bi bi-trash-fill"></i>
+                <i class="bi bi-pencil-square"></i>
+              </td>
+            </tr>
+
+            <tr>
+              <th scope="row">2</th>
+              <td>Facebook</td>
+              <td>fbUser</td>
+              <td>01/10/2018</td>
+              <td>
+                <i class="bi bi-file-earmark-code"></i>
+                <i class="bi bi-trash-fill"></i>
+                <i class="bi bi-pencil-square"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
   </main>
+
   <script>
     let drawData = (data) => {
       data.forEach(category => {
@@ -25,5 +82,7 @@
       .then(res => res.json())
       .then(data => drawData(data))
   </script>
+
 </body>
+
 </html>
