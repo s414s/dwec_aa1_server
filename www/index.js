@@ -77,7 +77,7 @@ let drawSites = (data) => {
 
         const iElementEdit = document.createElement('i');
         iElementEdit.className = 'bi bi-pencil-square';
-        iElementEdit.onclick = () => console.log("hola desde boton edit");
+        iElementEdit.onclick = () => console.log(`edit from ${site.id}`);
         editButton.appendChild(iElementEdit);
 
         actionsCell.appendChild(openButton);
