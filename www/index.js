@@ -66,19 +66,26 @@ function drawSites(data) {
         const iElementTrash = document.createElement('i');
         iElementTrash.className = 'bi bi-trash-fill';
         iElementTrash.onclick = () => {
-            fetch(`${apiOrigin}/sites/${site.id}`, { method: 'DELETE' })
+            fetch(`${apiOrigin}/sites/${site.id}`,
+                {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            )
                 .then(resp => {
                     if (resp.ok) {
                         console.log("borrado correctamente");
-                        drawSites();
                     } else {
-                        console.log('error al procesar peticion');
+                        console.error('error al procesar peticion');
                         throw new Error('Error al procesar petición');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Error:', error);
+                })
+                .finally(() => {
+                    getSitesFromCategory();
                 });
         }
         trashButton.appendChild(iElementTrash);
@@ -200,8 +207,7 @@ function drawCategories(data) {
 
 // TODO - hacer que si ninguna está seleccionada no se pida ninguna
 
-window.onload = function () {
-
+function getSitesFromCategory() {
     fetch(`${apiOrigin}/categories/${selectedCategoryId ?? 1}`,
         {
             headers: { 'Content-Type': 'application/json' },
@@ -213,7 +219,9 @@ window.onload = function () {
             console.error('Error:', error);
             alert('alert when calling sites from category');
         });
+}
 
+function getAllCategories() {
     fetch(`${apiOrigin}/categories`,
         {
             headers: { 'Content-Type': 'application/json' },
@@ -225,5 +233,54 @@ window.onload = function () {
             console.error('Error:', error);
             alert('alert when calling categories');
         });
-
 }
+
+window.onload = function () {
+    getSitesFromCategory();
+    getAllCategories();
+}
+
+
+const apiCaller = {
+    host: "http://localhost:3000",
+
+    get: async function (uri, obj = {}) {
+
+        // Creates query : String
+        const query =
+            Object.keys(obj)
+                .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(obj[k]))
+                .join('&');
+
+        const url = this.host + uri + "?" + query;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        return response.json();
+    },
+
+    post: async function (uri, obj = {}, method = "POST") {
+        const url = this.host + uri;
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(obj)
+        });
+
+        return response.json();
+    },
+
+    put: async function (uri, obj = {}) {
+        return this.post(uri, obj, "PUT");
+    },
+
+    del: async function (uri, obj = {}) {
+        return this.post(uri, obj, "DELETE");
+    },
+};
