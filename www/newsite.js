@@ -8,11 +8,17 @@ const selectedSiteId = urlHashInfo[1];
 
 // SELECTORS
 const pageTitle = document.getElementById('pageTitle');
+
 const urlField = document.getElementById('url');
 const nameField = document.getElementById('name');
 const userField = document.getElementById('username');
 const passwordField = document.getElementById('password');
 const descriptionField = document.getElementById('description');
+
+const autogenPwdBtn = document.getElementById('autogenPwd');
+autogenPwdBtn.onclick = () => {
+    document.getElementById('password').value = generateSafePassword();
+}
 
 function generateSafePassword() {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -71,6 +77,7 @@ function upsertSite() {
             if (!res.ok) {
                 alert(`error when ${selectedSiteId ? "modifying" : "creating"} site`);
             }
+            window.location.href = "/";
         })
         .catch(error => {
             console.error('Error:', error);

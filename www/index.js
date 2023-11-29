@@ -107,7 +107,6 @@ addCategoryBtn.onclick = () => {
     const categoryName = document.getElementById('categoryName').value;
 
     // TODO - check if categoryName already exists
-    // console.log("category name", categoryName)
     if (!categoryName || categoryName.length > 14) {
         alert('Category name not valid');
         return
