@@ -1,6 +1,6 @@
 'use strict';
 
-// Global State
+// GLOBAL STATE
 const apiOrigin = "http://localhost:3000"
 // let selectedCategoryId = undefined
 let selectedCategoryId = 1
@@ -191,7 +191,6 @@ function getSitesFromCategory() {
             alert('alert when calling sites from category');
             drawSites([])
         });
-    // TODO - el finally aqui
 }
 
 function getAllCategories() {
@@ -205,8 +204,8 @@ function getAllCategories() {
         .catch(error => {
             console.error('Error:', error);
             alert('alert when calling categories');
+            drawCategories([])
         });
-    // TODO - el finally aqui
 }
 
 window.onload = function () {
