@@ -8,7 +8,7 @@ let selectedCategoryId = 1
 // TODO - if category is not undefinded, redirect to /
 // TODO - reset sites when rendering
 function drawSites(data) {
-    console.log("data from sites", data)
+    // console.log("data from sites", data)
     const parent = document.getElementsByTagName('tbody')[0]
 
     // reset elements
@@ -108,8 +108,10 @@ function drawSites(data) {
 const addCategoryBtn = document.getElementById('addCatBtn');
 addCategoryBtn.onclick = () => {
     const categoryName = document.getElementById('categoryName').value;
+
     // TODO - check if categoryName already exists
-    if (!categoryName) {
+    // console.log("category name", categoryName)
+    if (!categoryName || categoryName.length > 14) {
         alert('Category name not valid');
         return
     }
@@ -117,22 +119,26 @@ addCategoryBtn.onclick = () => {
     fetch(`${apiOrigin}/categories`,
         {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: categoryName })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "name": categoryName })
         })
         .then(res => {
+            console.log("RES", res)
             if (res.ok) {
                 drawCategories();
+                return res.json()
             } else {
                 console.log('new category could not be created');
-                throw new Error('new category could not be created');
+                // throw new Error('new category could not be created');
+                console.log(res.json());
             }
+        })
+        .then(data => {
+            console.log("new category", data)
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error:', error);
+            alert('Error when creating new category');
         });
 };
 
@@ -152,8 +158,8 @@ function drawCategories(data) {
 
         listElement.className = `nav-item`;
 
-        child.innerText = category.name.charAt(0).toUpperCase() + category.name.slice(1);
-        // child.innerText = category.name;
+        // TODO - if category name is null, ignore
+        child.innerText = category.name?.charAt(0)?.toUpperCase() + category.name?.slice(1);
 
         child.className = `nav-link ${category.id === selectedCategoryId ? "active" : ""}`;
         child.id = category.id
@@ -161,7 +167,11 @@ function drawCategories(data) {
             selectedCategoryId = category.id
             window.history.pushState({}, "", `/${selectedCategoryId}`);
 
-            fetch(`${apiOrigin}/categories/${selectedCategoryId}`)
+            fetch(`${apiOrigin}/categories/${selectedCategoryId}`,
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                }
+            )
                 .then(res => res.json())
                 .then(data => drawSites(data))
                 .catch(error => {
@@ -169,7 +179,11 @@ function drawCategories(data) {
                     alert('Error:', error);
                 });
 
-            fetch(`${apiOrigin}/categories`)
+            fetch(`${apiOrigin}/categories`,
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                }
+            )
                 .then(res => res.json())
                 .then(data => drawCategories(data))
                 .catch(error => {
@@ -185,18 +199,31 @@ function drawCategories(data) {
 }
 
 // TODO - hacer que si ninguna está seleccionada no se pida ninguna
-fetch(`${apiOrigin}/categories/${selectedCategoryId ?? 1}`)
-    .then(res => res.json())
-    .then(data => drawSites(data))
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error:', error);
-    });
 
-fetch(`${apiOrigin}/categories`)
-    .then(res => res.json())
-    .then(data => drawCategories(data))
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error:', error);
-    });
+window.onload = function () {
+
+    fetch(`${apiOrigin}/categories/${selectedCategoryId ?? 1}`,
+        {
+            headers: { 'Content-Type': 'application/json' },
+        }
+    )
+        .then(res => res.json())
+        .then(data => drawSites(data))
+        .catch(error => {
+            console.error('Error:', error);
+            alert('alert when calling sites from category');
+        });
+
+    fetch(`${apiOrigin}/categories`,
+        {
+            headers: { 'Content-Type': 'application/json' },
+        }
+    )
+        .then(res => res.json())
+        .then(data => drawCategories(data))
+        .catch(error => {
+            console.error('Error:', error);
+            alert('alert when calling categories');
+        });
+
+}
