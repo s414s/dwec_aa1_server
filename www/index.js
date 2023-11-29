@@ -17,33 +17,23 @@ function drawSites(data) {
     // CREATE ROWS
     data.forEach((site, index) => {
         const row = document.createElement('tr')
-        row.id = site.id
-
-        // ORDER CELL
-        const orderCell = document.createElement('th')
-        orderCell.innerText = index + 1
-        row.appendChild(orderCell)
-
-        // SITENAME CELL
-        const siteNameCell = document.createElement('td')
-        siteNameCell.innerText = site.url
-        row.appendChild(siteNameCell)
-
-        // USERNAME CELL
-        const userNameCell = document.createElement('td')
-        userNameCell.innerText = site.user
-        row.appendChild(userNameCell)
-
-        // DATE CELL
-        const creationDateCell = document.createElement('td')
         const date = new Date(site.createdAt)
         const formattedDate = date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
         });
-        creationDateCell.innerText = formattedDate
-        row.appendChild(creationDateCell)
+
+        const rowHTML = `
+            <tr id="${site.id}">
+                <th>${index + 1}</th>
+                <td>${site.url}</td>
+                <td>${site.user}</td>
+                <td>${formattedDate}</td>
+            </tr>
+        `;
+
+        row.insertAdjacentHTML('beforeend', rowHTML);
 
         // ACTION CELL
         const actionsCell = document.createElement('td');
