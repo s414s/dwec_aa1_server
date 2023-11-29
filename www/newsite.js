@@ -45,4 +45,8 @@ if (selectedSiteId) {
             passwordField.value = data.password;
             descriptionField.value = data.description;
         })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error:', error);
+        });
 }

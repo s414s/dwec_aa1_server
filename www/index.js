@@ -6,7 +6,6 @@ const apiOrigin = "http://localhost:3000"
 let selectedCategoryId = 1
 
 // TODO - if category is not undefinded, redirect to /
-
 // TODO - reset sites when rendering
 function drawSites(data) {
     console.log("data from sites", data)
@@ -15,6 +14,7 @@ function drawSites(data) {
     // reset elements
     parent.innerHTML = null;
 
+    // CREATE ROWS
     data.forEach((site, index) => {
         const row = document.createElement('tr')
         row.id = site.id
@@ -58,14 +58,28 @@ function drawSites(data) {
         iElementOpen.onclick = () => window.location.href = site.url;
         openButton.appendChild(iElementOpen);
 
-        // Trash button
+        // Delete button
         const trashButton = document.createElement('button');
         trashButton.type = "button";
         trashButton.className = "btn";
 
         const iElementTrash = document.createElement('i');
         iElementTrash.className = 'bi bi-trash-fill';
-        iElementTrash.onclick = () => console.log("hola desde boton trash");
+        iElementTrash.onclick = () => {
+            fetch(`${apiOrigin}/sites/${site.id}`, { method: 'DELETE' })
+                .then(resp => {
+                    if (resp.ok) {
+                        console.log("borrado correctamente");
+                        drawSites();
+                    } else {
+                        throw new Error('Error al procesar petición');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error:', error);
+                });
+        }
         trashButton.appendChild(iElementTrash);
 
         // Edit button
@@ -99,15 +113,11 @@ function drawCategories(data) {
     addSiteButton.href = `newsite.html#${selectedCategoryId}`
 
     const parent = document.getElementsByTagName('ul')[0]
-    // reset elements
-    parent.innerHTML = null;
+    parent.innerHTML = null; // reset elements
 
     data.forEach(category => {
         const child = document.createElement('a')
         const listElement = document.createElement('li')
-
-        console.log("selectedCategoryId", selectedCategoryId)
-        console.log("nav-item id", category.id)
 
         listElement.className = `nav-item`;
 
@@ -116,8 +126,6 @@ function drawCategories(data) {
         child.id = category.id
         child.onclick = () => {
             selectedCategoryId = category.id
-            console.log("CHANGEING selectedCategoryId", selectedCategoryId)
-
             window.history.pushState({}, "", `/${selectedCategoryId}`);
 
             fetch(`${apiOrigin}/categories/${selectedCategoryId}`)
@@ -136,11 +144,18 @@ function drawCategories(data) {
 }
 
 // TODO - hacer que si ninguna está seleccionada no se pida ninguna
-// TODO - catch errors
 fetch(`${apiOrigin}/categories/${selectedCategoryId ?? 1}`)
     .then(res => res.json())
     .then(data => drawSites(data))
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error:', error);
+    });
 
 fetch(`${apiOrigin}/categories`)
     .then(res => res.json())
     .then(data => drawCategories(data))
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error:', error);
+    });
