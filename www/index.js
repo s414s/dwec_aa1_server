@@ -72,6 +72,7 @@ function drawSites(data) {
                         console.log("borrado correctamente");
                         drawSites();
                     } else {
+                        console.log('error al procesar peticion');
                         throw new Error('Error al procesar petición');
                     }
                 })
@@ -104,10 +105,40 @@ function drawSites(data) {
     })
 }
 
-// TODO - reset categories when rendering
+const addCategoryBtn = document.getElementById('addCatBtn');
+addCategoryBtn.onclick = () => {
+    const categoryName = document.getElementById('categoryName').value;
+    // TODO - check if categoryName already exists
+    if (!categoryName) {
+        alert('Category name not valid');
+        return
+    }
+
+    fetch(`${apiOrigin}/categories`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: categoryName })
+        })
+        .then(res => {
+            if (res.ok) {
+                drawCategories();
+            } else {
+                console.log('new category could not be created');
+                throw new Error('new category could not be created');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error:', error);
+        });
+};
+
 function drawCategories(data) {
-    console.log("data from categories", data)
-    console.log("selected category", window.location.pathname.split("/")[1])
+    // console.log("data from categories", data)
+    // console.log("selected category", window.location.pathname.split("/")[1])
 
     const addSiteButton = document.getElementById('addSiteButton');
     addSiteButton.href = `newsite.html#${selectedCategoryId}`
@@ -122,6 +153,8 @@ function drawCategories(data) {
         listElement.className = `nav-item`;
 
         child.innerText = category.name.charAt(0).toUpperCase() + category.name.slice(1);
+        // child.innerText = category.name;
+
         child.className = `nav-link ${category.id === selectedCategoryId ? "active" : ""}`;
         child.id = category.id
         child.onclick = () => {
@@ -131,10 +164,18 @@ function drawCategories(data) {
             fetch(`${apiOrigin}/categories/${selectedCategoryId}`)
                 .then(res => res.json())
                 .then(data => drawSites(data))
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error:', error);
+                });
 
             fetch(`${apiOrigin}/categories`)
                 .then(res => res.json())
                 .then(data => drawCategories(data))
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error:', error);
+                });
         }
         // child.onclick = () => { window.location.pathname = `/${category.name}` }
 
