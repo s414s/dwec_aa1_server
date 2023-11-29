@@ -17,33 +17,23 @@ function drawSites(data) {
     // CREATE ROWS
     data.forEach((site, index) => {
         const row = document.createElement('tr')
-        row.id = site.id
-
-        // ORDER CELL
-        const orderCell = document.createElement('th')
-        orderCell.innerText = index + 1
-        row.appendChild(orderCell)
-
-        // SITENAME CELL
-        const siteNameCell = document.createElement('td')
-        siteNameCell.innerText = site.url
-        row.appendChild(siteNameCell)
-
-        // USERNAME CELL
-        const userNameCell = document.createElement('td')
-        userNameCell.innerText = site.user
-        row.appendChild(userNameCell)
-
-        // DATE CELL
-        const creationDateCell = document.createElement('td')
         const date = new Date(site.createdAt)
         const formattedDate = date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
         });
-        creationDateCell.innerText = formattedDate
-        row.appendChild(creationDateCell)
+
+        const rowHTML = `
+            <tr id="${site.id}">
+                <th>${index + 1}</th>
+                <td>${site.url}</td>
+                <td>${site.user}</td>
+                <td>${formattedDate}</td>
+            </tr>
+        `;
+
+        row.insertAdjacentHTML('beforeend', rowHTML);
 
         // ACTION CELL
         const actionsCell = document.createElement('td');
@@ -132,7 +122,6 @@ addCategoryBtn.onclick = () => {
         .then(res => {
             console.log("RES", res)
             if (res.ok) {
-                drawCategories();
                 return res.json()
             } else {
                 console.log('new category could not be created');
@@ -146,6 +135,9 @@ addCategoryBtn.onclick = () => {
         .catch(error => {
             console.error('Error:', error);
             alert('Error when creating new category');
+        })
+        .finally(() => {
+            getAllCategories();
         });
 };
 
@@ -169,34 +161,14 @@ function drawCategories(data) {
         child.innerText = category.name?.charAt(0)?.toUpperCase() + category.name?.slice(1);
 
         child.className = `nav-link ${category.id === selectedCategoryId ? "active" : ""}`;
-        child.id = category.id
+        // child.id = category.id
         child.onclick = () => {
             selectedCategoryId = category.id
             window.history.pushState({}, "", `/${selectedCategoryId}`);
 
-            fetch(`${apiOrigin}/categories/${selectedCategoryId}`,
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            )
-                .then(res => res.json())
-                .then(data => drawSites(data))
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error:', error);
-                });
+            getAllCategories();
+            getSitesFromCategory();
 
-            fetch(`${apiOrigin}/categories`,
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                }
-            )
-                .then(res => res.json())
-                .then(data => drawCategories(data))
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error:', error);
-                });
         }
         // child.onclick = () => { window.location.pathname = `/${category.name}` }
 
@@ -206,7 +178,6 @@ function drawCategories(data) {
 }
 
 // TODO - hacer que si ninguna está seleccionada no se pida ninguna
-
 function getSitesFromCategory() {
     fetch(`${apiOrigin}/categories/${selectedCategoryId ?? 1}`,
         {
@@ -218,7 +189,9 @@ function getSitesFromCategory() {
         .catch(error => {
             console.error('Error:', error);
             alert('alert when calling sites from category');
+            drawSites([])
         });
+    // TODO - el finally aqui
 }
 
 function getAllCategories() {
@@ -233,13 +206,13 @@ function getAllCategories() {
             console.error('Error:', error);
             alert('alert when calling categories');
         });
+    // TODO - el finally aqui
 }
 
 window.onload = function () {
     getSitesFromCategory();
     getAllCategories();
 }
-
 
 const apiCaller = {
     host: "http://localhost:3000",
