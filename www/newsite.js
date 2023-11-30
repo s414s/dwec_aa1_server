@@ -1,15 +1,30 @@
 'use strict';
 
-// Global State
+// GLOBAL STATE
 const apiOrigin = "http://localhost:3000";
 const urlHashInfo = window.location.hash.replace("#", "").split("-");
 const selectedCategoryId = urlHashInfo[0];
 const selectedSiteId = urlHashInfo[1];
 
+// SELECTORS
+const pageTitle = document.getElementById('pageTitle');
+
 const urlField = document.getElementById('url');
+const nameField = document.getElementById('name');
 const userField = document.getElementById('username');
 const passwordField = document.getElementById('password');
 const descriptionField = document.getElementById('description');
+
+const autogenPwdBtn = document.getElementById('autogenPwd');
+const upsertBtn = document.getElementById('upsertBtn');
+
+autogenPwdBtn.onclick = () => {
+    passwordField.value = generateSafePassword();
+}
+
+upsertBtn.onclick = () => {
+    upsertSite();
+}
 
 function generateSafePassword() {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -26,21 +41,19 @@ function generateSafePassword() {
     }
 
     // Shuffle the password
-    password = password.split('').sort(() => 0.5 - Math.random()).join('');
+    // password = password.split('').sort(() => 0.5 - Math.random()).join('');
 
     console.log(generateSafePassword());
     return password;
 }
 
 if (selectedSiteId) {
-    // TODO - catch errors
     fetch(`${apiOrigin}/sites/${selectedSiteId}`)
         .then(res => res.json())
         .then(data => {
-            console.log(data);
             console.log("url", data.url);
             urlField.value = data.url;
-            urlField.value = "hola";
+            nameField.value = data.name;
             userField.value = data.user;
             passwordField.value = data.password;
             descriptionField.value = data.description;
@@ -49,4 +62,34 @@ if (selectedSiteId) {
             console.error('Error:', error);
             alert('Error:', error);
         });
+}
+
+function upsertSite() {
+    fetch(`${apiOrigin}/sites/${selectedSiteId ?? ""}`,
+        {
+            method: `${selectedSiteId ? "PUT" : "POST"}`,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: nameField.value,
+                url: urlField.value,
+                user: userField.value,
+                password: passwordField.value,
+                description: descriptionField.value
+            })
+        }
+    )
+        .then(res => {
+            if (!res.ok) {
+                alert(`error when ${selectedSiteId ? "modifying" : "creating"} site`);
+            }
+            window.location.href = "/";
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert();
+        });
+}
+
+window.onload = function () {
+    pageTitle.innerText = selectedSiteId ? "Modify Site" : "New Site";
 }

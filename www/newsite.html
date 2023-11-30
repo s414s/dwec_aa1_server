@@ -10,11 +10,15 @@
 </head>
 
 <body class="container">
-    <h1 class="text-center">New Site</h1>
+    <h1 id="pageTitle" class="text-center">New Site</h1>
     <div class="form-control">
         <div class="mb-3">
-            <label for="siteName" class="form-label">Url:</label>
+            <label for="url" class="form-label">Url:</label>
             <input type="url" class="form-control" id="url">
+        </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" class="form-control" id="name">
         </div>
         <div class="mb-3">
             <label for="user" class="form-label">User:</label>
@@ -22,14 +26,14 @@
         </div>
         <div class="mb-3">
             <label for="password" class="form-label">Password:</label>
-            <input type="password" class="form-control" id="password">
-            <button class="btn btn-primary mt-3" id="autoPwdBtn">Auto Generate</button>
+            <input type="text" class="form-control" id="password">
+            <button class="btn btn-primary mt-3" id="autogenPwd">Auto Generate</button>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description:</label>
             <textarea class="form-control" id="description" rows="3"></textarea>
         </div>
-        <button class="btn btn-primary" id="createButton">Create</button>
+        <button class="btn btn-primary" id="upsertBtn">Ok</button>
         <a class="btn btn-danger" href="/">Cancel</a>
     </div>
 </body>
