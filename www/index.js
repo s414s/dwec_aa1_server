@@ -2,11 +2,8 @@
 
 // GLOBAL STATE
 const apiOrigin = "http://localhost:3000"
-// let selectedCategoryId = undefined
-let selectedCategoryId = 1
+let selectedCategoryId = undefined
 
-// TODO - if category is not undefinded, redirect to /
-// TODO - reset sites when rendering
 function drawSites(data) {
     // console.log("data from sites", data)
     const parent = document.getElementsByTagName('tbody')[0]
@@ -42,20 +39,15 @@ function drawSites(data) {
         const openButton = document.createElement('button');
         openButton.type = "button";
         openButton.className = "btn";
-
-        const iElementOpen = document.createElement('i');
-        iElementOpen.className = 'bi bi-file-earmark-code';
-        iElementOpen.onclick = () => window.location.href = site.url;
-        openButton.appendChild(iElementOpen);
+        openButton.insertAdjacentHTML('beforeend', '<i class="bi bi-file-earmark-code"></i>');
+        openButton.onclick = () => window.location.href = site.url;
 
         // Delete button
         const trashButton = document.createElement('button');
         trashButton.type = "button";
         trashButton.className = "btn";
-
-        const iElementTrash = document.createElement('i');
-        iElementTrash.className = 'bi bi-trash-fill';
-        iElementTrash.onclick = () => {
+        trashButton.insertAdjacentHTML('beforeend', '<i class="bi bi-trash-fill"></i>');
+        trashButton.onclick = () => {
             fetch(`${apiOrigin}/sites/${site.id}`,
                 {
                     method: 'DELETE',
@@ -78,19 +70,13 @@ function drawSites(data) {
                     getSitesFromCategory();
                 });
         }
-        trashButton.appendChild(iElementTrash);
 
         // Edit button
         const editButton = document.createElement('button');
         editButton.type = "button";
         editButton.className = "btn";
-
+        editButton.insertAdjacentHTML('beforeend', '<i class="bi bi-pencil-square"></i>');
         editButton.onclick = () => window.location.href = `newsite.html#${selectedCategoryId}-${site.id}`;
-
-        const iElementEdit = document.createElement('i');
-        iElementEdit.className = 'bi bi-pencil-square';
-        iElementEdit.onclick = () => console.log(`edit from ${site.id}`);
-        editButton.appendChild(iElementEdit);
 
         actionsCell.appendChild(openButton);
         actionsCell.appendChild(trashButton);
@@ -141,9 +127,6 @@ addCategoryBtn.onclick = () => {
 };
 
 function drawCategories(data) {
-    // console.log("data from categories", data)
-    // console.log("selected category", window.location.pathname.split("/")[1])
-
     const addSiteButton = document.getElementById('addSiteButton');
     addSiteButton.href = `newsite.html#${selectedCategoryId}`
 
@@ -178,6 +161,10 @@ function drawCategories(data) {
 
 // TODO - hacer que si ninguna está seleccionada no se pida ninguna
 function getSitesFromCategory() {
+    if (!selectedCategoryId) {
+        return
+    }
+
     fetch(`${apiOrigin}/categories/${selectedCategoryId ?? 1}`,
         {
             headers: { 'Content-Type': 'application/json' },
