@@ -16,8 +16,14 @@ const passwordField = document.getElementById('password');
 const descriptionField = document.getElementById('description');
 
 const autogenPwdBtn = document.getElementById('autogenPwd');
+const upsertBtn = document.getElementById('upsertBtn');
+
 autogenPwdBtn.onclick = () => {
-    document.getElementById('password').value = generateSafePassword();
+    passwordField.value = generateSafePassword();
+}
+
+upsertBtn.onclick = () => {
+    upsertSite();
 }
 
 function generateSafePassword() {
@@ -35,7 +41,7 @@ function generateSafePassword() {
     }
 
     // Shuffle the password
-    password = password.split('').sort(() => 0.5 - Math.random()).join('');
+    // password = password.split('').sort(() => 0.5 - Math.random()).join('');
 
     console.log(generateSafePassword());
     return password;
@@ -45,7 +51,6 @@ if (selectedSiteId) {
     fetch(`${apiOrigin}/sites/${selectedSiteId}`)
         .then(res => res.json())
         .then(data => {
-            console.log(data);
             console.log("url", data.url);
             urlField.value = data.url;
             nameField.value = data.name;
@@ -60,7 +65,7 @@ if (selectedSiteId) {
 }
 
 function upsertSite() {
-    fetch(`${apiOrigin}/sites/${selectedCategoryId ?? 1}`,
+    fetch(`${apiOrigin}/sites/${selectedSiteId ?? ""}`,
         {
             method: `${selectedSiteId ? "PUT" : "POST"}`,
             headers: { 'Content-Type': 'application/json' },
