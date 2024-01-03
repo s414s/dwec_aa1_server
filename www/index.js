@@ -5,11 +5,8 @@ const apiOrigin = "http://localhost:3000"
 let selectedCategoryId = undefined
 
 function drawSites(data) {
-    // console.log("data from sites", data)
     const parent = document.getElementsByTagName('tbody')[0]
-
-    // reset elements
-    parent.innerHTML = null;
+    parent.innerHTML = null; // reset elements
 
     // CREATE ROWS
     data.forEach((site, index) => {
@@ -110,7 +107,6 @@ addCategoryBtn.onclick = () => {
                 return res.json()
             } else {
                 console.log('new category could not be created');
-                // throw new Error('new category could not be created');
                 console.log(res.json());
             }
         })
@@ -134,14 +130,18 @@ function drawCategories(data) {
     parent.innerHTML = null; // reset elements
 
     data.forEach(category => {
+        if (!category || !category.name) return
+
+        const container = document.createElement('div')
         const child = document.createElement('a')
         const listElement = document.createElement('li')
 
         listElement.className = `nav-item`;
 
+        container.className = `d-flex`;
+
         // TODO - if category name is null, ignore
         child.innerText = category.name?.charAt(0)?.toUpperCase() + category.name?.slice(1);
-
         child.className = `nav-link ${category.id === selectedCategoryId ? "active" : ""}`;
         // child.id = category.id
         child.onclick = () => {
@@ -150,16 +150,44 @@ function drawCategories(data) {
 
             getAllCategories();
             getSitesFromCategory();
-
         }
-        // child.onclick = () => { window.location.pathname = `/${category.name}` }
 
-        listElement.appendChild(child)
+        // Delete category button
+        const deleteCatBtn = document.createElement('button');
+        deleteCatBtn.type = "button";
+        deleteCatBtn.className = "btn";
+        deleteCatBtn.insertAdjacentHTML('beforeend', '<i class="bi bi-trash-fill"></i>');
+        deleteCatBtn.onclick = () => {
+            fetch(`${apiOrigin}/categories/${category.id}`,
+                {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            )
+                .then(resp => {
+                    if (resp.ok) {
+                        console.log("categoria borrada correctamente");
+                    } else {
+                        console.error('error al procesar peticion');
+                        throw new Error('Error al procesar petición');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error:', error);
+                })
+                .finally(() => {
+                    getAllCategories();
+                });
+        }
+
+        container.appendChild(child)
+        container.appendChild(deleteCatBtn)
+        listElement.appendChild(container);
         parent.appendChild(listElement)
     })
 }
 
-// TODO - hacer que si ninguna está seleccionada no se pida ninguna
 function getSitesFromCategory() {
     if (!selectedCategoryId) {
         return
