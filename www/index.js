@@ -8,26 +8,27 @@ function drawSites(data) {
     const parent = document.getElementsByTagName('tbody')[0]
     parent.innerHTML = null; // reset elements
 
-    // CREATE ROWS
-    data.forEach((site, index) => {
-        const row = document.createElement('tr')
-        const date = new Date(site.createdAt)
-        const formattedDate = date.toLocaleDateString('en-US', {
+    const rows = `${data.map((site, i) => {
+        const formattedDate = new Date(site.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'numeric',
             day: 'numeric',
         });
 
-        const rowHTML = `
+        return `
             <tr id="${site.id}">
                 <th>${index + 1}</th>
                 <td>${site.url}</td>
                 <td>${site.user}</td>
                 <td>${formattedDate}</td>
+                <td><button class="btn"></button></td>
             </tr>
-        `;
+    `})}`
 
-        row.insertAdjacentHTML('beforeend', rowHTML);
+    parent.insertAdjacentHTML('beforeend', rows);
+
+    // CREATE ROWS
+    data.forEach((site, index) => {
 
         // ACTION CELL
         const actionsCell = document.createElement('td');
